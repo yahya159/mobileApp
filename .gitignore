@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+
+# Vector Store Files
+vector_store.pkl
+vector_store.index
+chunks.pkl
+
+# Streamlit
+.streamlit/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# PDF files (optional - uncomment if you don't want to track PDFs)
+# *.pdf
+
+# Firebase service account (contains sensitive credentials)
+api_server_service_account.json
+

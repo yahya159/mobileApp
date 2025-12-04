@@ -15,16 +15,41 @@ A chatbot application powered by Ollama with RAG (Retrieval-Augmented Generation
 
 ```
 emsi-chatbot/
-├── app.py                 # Streamlit web application
-├── api_server.py          # Flask REST API server (for mobile app)
-├── rag_module.py          # RAG system implementation
-├── requirements.txt       # Python dependencies
-├── mobile_app/           # Flutter mobile application
-│   ├── lib/              # Flutter source code
-│   ├── android/          # Android configuration
-│   └── pubspec.yaml      # Flutter dependencies
-└── Brochure_EMSI.pdf     # Document for RAG (if available)
+├── src/                      # Source code
+│   ├── config/              # Configuration module
+│   │   └── settings.py      # Centralized settings
+│   ├── core/                # Core business logic
+│   │   ├── ollama/         # Ollama client
+│   │   └── rag/            # RAG system
+│   ├── api/                 # FastAPI server
+│   │   ├── routes/         # API routes
+│   │   ├── middleware/     # API middleware (auth)
+│   │   └── app.py          # FastAPI app factory
+│   └── web/                # Streamlit web app
+│       └── app.py          # Streamlit application
+├── config/                  # Configuration files
+│   └── api_server_service_account.json  # Firebase credentials
+├── data/                    # Data files
+│   ├── Brochure_EMSI.pdf   # PDF document for RAG
+│   ├── vector_store.index  # FAISS vector index
+│   └── chunks.pkl          # Document chunks
+├── mobile_app/             # Flutter mobile application
+├── api_server.py           # API server entry point
+├── app.py                  # Web app entry point
+├── requirements.txt        # Python dependencies
+└── README.md              # This file
 ```
+
+## Architecture
+
+The project follows a clean, modular architecture:
+
+- **Configuration**: Centralized in `src/config/settings.py` with environment variable support
+- **Core Logic**: Separated into `core/ollama` (Ollama client) and `core/rag` (RAG system)
+- **API Layer**: FastAPI-based REST API with route separation and middleware
+- **Web Layer**: Streamlit application for user interface
+- **Data Management**: All data files organized in `data/` directory
+- **Configuration Files**: All config files in `config/` directory
 
 ## Prerequisites
 
@@ -41,7 +66,24 @@ emsi-chatbot/
 pip install -r requirements.txt
 ```
 
-### 2. Start Ollama
+### 2. Configure Environment (Optional)
+
+Create a `.env` file in the root directory to override default settings:
+
+```env
+OLLAMA_HOST=http://localhost:11434
+OLLAMA_MODEL=qwen3-coder:30b
+API_PORT=5000
+STREAMLIT_PORT=8501
+RAG_CHUNK_SIZE=1000
+RAG_CHUNK_OVERLAP=200
+
+# Security: For production, restrict CORS to specific domains
+# CORS_ORIGINS=https://yourdomain.com,https://app.yourdomain.com
+# Default "*" allows all origins (development only - NOT for production!)
+```
+
+### 3. Start Ollama
 
 ```bash
 ollama serve
@@ -49,15 +91,21 @@ ollama serve
 
 Keep this running in a separate terminal.
 
-### 3. Run the Web Application
+### 4. Run the Web Application
 
 ```bash
 streamlit run app.py
 ```
 
+Or use the batch file (Windows):
+
+```bash
+run_project.bat
+```
+
 The web app will open at `http://localhost:8501`
 
-### 4. Run the API Server (for Mobile App)
+### 5. Run the API Server (for Mobile App)
 
 ```bash
 python api_server.py
@@ -65,7 +113,7 @@ python api_server.py
 
 The API server will run at `http://localhost:5000`
 
-### 5. Run the Mobile App
+### 6. Run the Mobile App
 
 See [mobile_app/README.md](mobile_app/README.md) for detailed instructions.
 
@@ -91,7 +139,7 @@ See [mobile_app/README.md](mobile_app/README.md) for detailed instructions.
 
 ## API Endpoints
 
-The Flask API server provides the following endpoints:
+The FastAPI server provides the following endpoints:
 
 - `GET /api/health` - Health check
 - `GET /api/status` - Server status and configuration
@@ -103,6 +151,7 @@ The Flask API server provides the following endpoints:
 ```bash
 curl -X POST http://localhost:5000/api/chat \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <firebase_token>" \
   -d '{
     "message": "What is EMSI?",
     "rag_enabled": true,
@@ -111,21 +160,44 @@ curl -X POST http://localhost:5000/api/chat \
   }'
 ```
 
+### API Documentation
+
+FastAPI provides automatic interactive API documentation:
+- **Swagger UI**: http://localhost:5000/docs
+- **ReDoc**: http://localhost:5000/redoc
+
 ## Configuration
 
 ### Model Configuration
 
-Edit `app.py` or `api_server.py` to change the model:
+Edit `src/config/settings.py` or set environment variables:
 
 ```python
-MODEL_NAME = "qwen3-coder:30b"  # Change to your preferred model
+OLLAMA_MODEL = "qwen3-coder:30b"  # Change to your preferred model
 ```
 
 ### RAG Configuration
 
-- **Chunk Size**: Default 1000 characters
-- **Chunk Overlap**: Default 200 characters
+- **Chunk Size**: Default 1000 characters (configurable via `RAG_CHUNK_SIZE`)
+- **Chunk Overlap**: Default 200 characters (configurable via `RAG_CHUNK_OVERLAP`)
 - **Top K Retrieval**: Number of document chunks to retrieve (default: 3)
+
+## Security
+
+⚠️ **Important Security Information**
+
+This project handles sensitive credentials and API keys. Please review the security guidelines:
+
+- **[SECURITY.md](SECURITY.md)** - Comprehensive security guidelines
+- **Firebase Credentials**: Never commit credential files (now in `.gitignore`)
+- **CORS Configuration**: Restrict origins in production (see [SECURITY.md](SECURITY.md))
+
+### Quick Security Checklist
+
+- [ ] Firebase credentials are NOT committed to git
+- [ ] CORS origins are restricted in production (not `"*"`)
+- [ ] API keys have restrictions set in Firebase Console
+- [ ] Service account keys are rotated regularly
 
 ## Troubleshooting
 
@@ -146,16 +218,27 @@ MODEL_NAME = "qwen3-coder:30b"  # Change to your preferred model
 ### RAG Issues
 
 - Ensure PDF is indexed before enabling RAG
-- Check that vector store files exist (`vector_store.index`, `chunks.pkl`)
+- Check that vector store files exist in `data/` directory
 - Re-index the document if needed
 
 ## Development
 
+### Project Structure
+
+The project is organized into clear modules:
+
+- **`src/config/`**: Configuration management
+- **`src/core/`**: Core business logic (Ollama client, RAG system)
+- **`src/api/`**: FastAPI with routes and middleware
+- **`src/web/`**: Streamlit web interface
+- **`config/`**: Configuration files (Firebase credentials, etc.)
+- **`data/`**: Data files (PDFs, vector stores, chunks)
+
 ### Adding New Features
 
-1. **Web App**: Modify `app.py` for Streamlit features
-2. **API**: Modify `api_server.py` for new endpoints
-3. **RAG**: Modify `rag_module.py` for RAG improvements
+1. **Web App**: Modify `src/web/app.py` for Streamlit features
+2. **API**: Add routes in `src/api/routes/` or modify existing ones (FastAPI routers)
+3. **RAG**: Modify `src/core/rag/rag_system.py` for RAG improvements
 4. **Mobile**: Modify files in `mobile_app/lib/`
 
 ### Testing
@@ -176,4 +259,3 @@ flutter test
 ## Contributing
 
 [Add contribution guidelines here]
-

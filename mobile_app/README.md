@@ -6,7 +6,7 @@ Flutter mobile application for the EMSI Chatbot.
 
 1. **Flutter SDK**: Install Flutter from [flutter.dev](https://flutter.dev/docs/get-started/install)
 2. **Android Studio** or **VS Code** with Flutter extensions
-3. **API Server**: The Flask API server must be running (see main project README)
+3. **API Server**: The FastAPI server must be running (see main project README)
 
 ## Setup Instructions
 
@@ -30,7 +30,7 @@ For **Physical Device**:
 
 ### 3. Start the API Server
 
-Before running the mobile app, make sure the Flask API server is running:
+Before running the mobile app, make sure the FastAPI server is running:
 
 ```bash
 # From the project root

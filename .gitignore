@@ -4,31 +4,79 @@ __pycache__/
 *$py.class
 *.so
 .Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
 venv/
 env/
 ENV/
-
-# Vector Store Files
-vector_store.pkl
-vector_store.index
-chunks.pkl
-
-# Streamlit
-.streamlit/
+.venv
 
 # IDE
 .vscode/
 .idea/
 *.swp
 *.swo
+*~
+
+# Data files
+data/*.pdf
+data/*.pkl
+data/*.index
+data/*.json
+!data/.gitkeep
+
+# Config files with secrets
+config/*.json
+!config/.gitkeep
+!config/*.example
+
+# Firebase credentials - NEVER commit these
+**/google-services.json
+**/GoogleService-Info.plist
+**/api_server_service_account.json
+!**/google-services.json.example
+!**/GoogleService-Info.plist.example
+!**/api_server_service_account.json.example
+
+# Environment variables
+.env
+.env.local
 
 # OS
 .DS_Store
 Thumbs.db
 
-# PDF files (optional - uncomment if you don't want to track PDFs)
-# *.pdf
+# Flutter
+mobile_app/.dart_tool/
+mobile_app/.flutter-plugins
+mobile_app/.flutter-plugins-dependencies
+mobile_app/.packages
+mobile_app/.pub-cache/
+mobile_app/.pub/
+mobile_app/build/
+mobile_app/.idea/
+mobile_app/*.iml
 
-# Firebase service account (contains sensitive credentials)
-api_server_service_account.json
+# Logs
+*.log
 
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~

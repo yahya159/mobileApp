@@ -1,11 +1,18 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../models/user_model.dart';
 
 class AuthProvider with ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  // For web, we need to provide the client ID
+  // Get this from Firebase Console > Authentication > Sign-in method > Google > Web client ID
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    // Use the Web client ID for web platform
+    // This should match the meta tag in web/index.html
+    clientId: kIsWeb ? '716649129108-lftouq95co2quitn4hgk09vq5pulihat.apps.googleusercontent.com' : null,
+  );
   
   UserModel? _user;
   bool _isLoading = false;
@@ -100,12 +107,18 @@ class AuthProvider with ChangeNotifier {
       _error = null;
       notifyListeners();
 
-      // Trigger the authentication flow
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      // Try to sign in silently first (if user was previously signed in)
+      GoogleSignInAccount? googleUser = await _googleSignIn.signInSilently();
+      
+      // If silent sign-in fails, trigger the interactive flow
+      if (googleUser == null) {
+        googleUser = await _googleSignIn.signIn();
+      }
 
       if (googleUser == null) {
-        // User canceled the sign-in
+        // User canceled the sign-in or popup was closed
         _isLoading = false;
+        _error = null; // Don't show error if user canceled
         notifyListeners();
         return;
       }

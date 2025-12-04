@@ -9,9 +9,9 @@ class ApiService {
   static const String _defaultBaseUrl = 'http://localhost:5000';
   
   String? _authToken;
-  Function(String?)? _getTokenCallback;
+  Future<String?> Function()? _getTokenCallback;
 
-  void setTokenCallback(Function(String?) callback) {
+  void setTokenCallback(Future<String?> Function() callback) {
     _getTokenCallback = callback;
   }
 
@@ -51,13 +51,16 @@ class ApiService {
       final response = await http.get(
         Uri.parse('$url/api/health'),
         headers: headers,
-      ).timeout(const Duration(seconds: 5));
+      ).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
-        return json.decode(response.body);
+        return json.decode(response.body) as Map<String, dynamic>;
       } else {
-        throw Exception('Server returned ${response.statusCode}');
+        throw Exception('Server returned ${response.statusCode}: ${response.body}');
       }
+    } on http.ClientException {
+      final url = await baseUrl;
+      throw Exception('Cannot connect to server at $url. Make sure the API server is running.');
     } catch (e) {
       throw Exception('Connection error: $e');
     }

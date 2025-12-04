@@ -25,6 +25,10 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="emsi_chatbot">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
+  
+  <!-- Google Sign-In Client ID for Web -->
+  <!-- Get this from Firebase Console > Authentication > Sign-in method > Google > Web client ID -->
+  <meta name="google-signin-client_id" content="716649129108-lftouq95co2quitn4hgk09vq5pulihat.apps.googleusercontent.com">
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
@@ -36,21 +40,23 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
   
-  <!-- Firebase Config - Replace with your Firebase config -->
+  <!-- Firebase Config - Auto-configured by FlutterFire CLI -->
+  <!-- Note: FlutterFire also initializes Firebase via Dart code (firebase_options.dart) -->
   <script>
-    // TODO: Replace with your Firebase configuration
-    // You can find this in Firebase Console > Project Settings > General > Your apps
     const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT_ID.appspot.com",
-      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-      appId: "YOUR_APP_ID"
+      apiKey: "AIzaSyCHXKB7cvzLSSYv5Nwjj_IJmFvsgFbRt-M",
+      authDomain: "emsiapp-d9641.firebaseapp.com",
+      projectId: "emsiapp-d9641",
+      storageBucket: "emsiapp-d9641.firebasestorage.app",
+      messagingSenderId: "716649129108",
+      appId: "1:716649129108:web:f88c76c2723f7e6d170081",
+      measurementId: "G-QTNGT02DN9"
     };
     
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
+    // Initialize Firebase (FlutterFire will also initialize via Dart)
+    if (typeof firebase !== 'undefined') {
+      firebase.initializeApp(firebaseConfig);
+    }
   </script>
 </head>
 <body>

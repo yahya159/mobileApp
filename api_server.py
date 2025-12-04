@@ -12,7 +12,14 @@ import firebase_admin
 from firebase_admin import credentials, auth
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for mobile app
+# Enable CORS for mobile app with more permissive settings for development
+CORS(app, resources={
+    r"/api/*": {
+        "origins": "*",
+        "methods": ["GET", "POST", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"]
+    }
+})
 
 # Initialize Firebase Admin SDK
 firebase_initialized = False

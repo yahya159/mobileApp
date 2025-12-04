@@ -9,7 +9,7 @@ class ChatProvider with ChangeNotifier {
 
   void setAuthProvider(AuthProvider authProvider) {
     _authProvider = authProvider;
-    _apiService.setTokenCallback((_) async {
+    _apiService.setTokenCallback(() async {
       return await _authProvider?.getIdToken();
     });
   }
@@ -29,13 +29,30 @@ class ChatProvider with ChangeNotifier {
 
   Future<void> checkConnection() async {
     try {
-      final status = await _apiService.checkHealth();
-      _isConnected = status['ollama_connected'] == true;
-      _error = null;
+      // Retry logic for web platform
+      Map<String, dynamic>? status;
+      int retries = 3;
+      for (int i = 0; i < retries; i++) {
+        try {
+          status = await _apiService.checkHealth();
+          break;
+        } catch (e) {
+          if (i == retries - 1) rethrow;
+          await Future.delayed(Duration(milliseconds: 500 * (i + 1)));
+        }
+      }
+      
+      if (status != null) {
+        _isConnected = status['ollama_connected'] == true;
+        _error = null;
+      } else {
+        _isConnected = false;
+        _error = 'Cannot connect to server';
+      }
       notifyListeners();
     } catch (e) {
       _isConnected = false;
-      _error = 'Cannot connect to server';
+      _error = 'Cannot connect to server. Make sure the API server is running on http://localhost:5000';
       notifyListeners();
     }
   }
